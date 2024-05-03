@@ -18,7 +18,7 @@ def findDepencencies(vhdlFile, adjListOut, adjListIn, fileIdx):
     try:
         with open(vhdlFile, 'r') as file:
             for line in file:
-                regexRule = r'[^-]component \w+'
+                regexRule = r'^[\s\t]*((?!--))*[\s\t]*component[\s\t]+\w+'
                 match = re.findall(regexRule, line, flags=re.IGNORECASE)
                 if match:
                     component = line.split()[1]
@@ -70,7 +70,6 @@ os.chdir(projectPath)
 vhdlFiles = glob.glob("*.vhd")
 vhdlFiles += glob.glob("**/*.vhd")
 
-
 # Create the empty adjacency lists
 adjacencyListOutgoing = []
 adjacencyListIncoming = []
@@ -86,6 +85,7 @@ for vhdlFile in vhdlFiles:
 orderOfCompilation = topologicalSort(adjacencyListOutgoing, adjacencyListIncoming)
 
 for i in orderOfCompilation:
+    print(f"compiling {vhdlFiles[i]}")
     os.system(f"ghdl -a {vhdlFiles[i]}")
     component = vhdlFiles[i].replace(".vhd", "")
     component = component.split("/")[-1]
