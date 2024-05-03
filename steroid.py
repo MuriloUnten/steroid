@@ -90,4 +90,5 @@ print(vhdlFiles)
 for i in orderOfCompilation:
     os.system(f"ghdl -a {vhdlFiles[i]}")
     component = vhdlFiles[i].replace(".vhd", "")
+    component = component.split("/")[-1]
     os.system(f"ghdl -e {component}")
