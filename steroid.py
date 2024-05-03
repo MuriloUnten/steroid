@@ -8,7 +8,7 @@ import re
 def findFileIndex(file, files):
     idx = 0
     for f in files:
-        if f == file:
+        if file in f:
             return idx
         idx += 1
     return -1
@@ -18,13 +18,14 @@ def findDepencencies(vhdlFile, adjListOut, adjListIn, fileIdx):
     try:
         with open(vhdlFile, 'r') as file:
             for line in file:
-                regexRule = r'[^-]component \w+ is'
+                regexRule = r'[^-]component \w+'
                 match = re.findall(regexRule, line, flags=re.IGNORECASE)
                 if match:
                     component = line.split()[1]
                     dependency = component + ".vhd"
-                    adjListOut[findFileIndex(dependency, vhdlFiles)].append(fileIdx)
-                    adjListIn[fileIdx].append(findFileIndex(dependency, vhdlFiles))
+                    dependencyIndex = findFileIndex(dependency, vhdlFiles)
+                    adjListOut[dependencyIndex].append(fileIdx)
+                    adjListIn[fileIdx].append(dependencyIndex)
 
     except FileNotFoundError:
         print(f"VHDL file {vhdlFile} not found")
@@ -66,8 +67,8 @@ if projectPath[-1] != "/":
 os.chdir(projectPath)
 
 # TODO: not add unwanted vhdl files
-vhdlFiles = glob.glob("**/*.vhd")
-vhdlFiles += glob.glob("*.vhd")
+vhdlFiles = glob.glob("*.vhd")
+vhdlFiles += glob.glob("**/*.vhd")
 
 
 # Create the empty adjacency lists
@@ -82,10 +83,7 @@ for vhdlFile in vhdlFiles:
     findDepencencies(vhdlFile, adjacencyListOutgoing, adjacencyListIncoming, fileIdx)
     fileIdx += 1
 
-print(adjacencyListOutgoing)
-print(adjacencyListIncoming)
 orderOfCompilation = topologicalSort(adjacencyListOutgoing, adjacencyListIncoming)
-print(vhdlFiles)
 
 for i in orderOfCompilation:
     os.system(f"ghdl -a {vhdlFiles[i]}")
