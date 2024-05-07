@@ -14,6 +14,7 @@ def findFileIndex(file, files):
     return -1
 
 
+# TODO: Add support for VHDL-2008 block comments
 def findDepencencies(vhdlFile, adjListOut, adjListIn, fileIdx):
     try:
         with open(vhdlFile, 'r') as file:
