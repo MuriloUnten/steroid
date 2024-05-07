@@ -8,7 +8,7 @@ import re
 def findFileIndex(file, files):
     idx = 0
     for f in files:
-        if file in f:
+        if file.casefold() in f.casefold():
             return idx
         idx += 1
     return -1
