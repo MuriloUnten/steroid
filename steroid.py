@@ -87,7 +87,9 @@ orderOfCompilation = topologicalSort(adjacencyListOutgoing, adjacencyListIncomin
 
 for i in orderOfCompilation:
     print(f"compiling {vhdlFiles[i]}")
-    os.system(f"ghdl -a {vhdlFiles[i]}")
+    # os.system(f"ghdl -a {vhdlFiles[i]}")
+    subprocess.run(["ghdl", "-a", vhdlFiles[i]])
     component = vhdlFiles[i].replace(".vhd", "")
     component = component.split("/")[-1]
-    os.system(f"ghdl -e {component}")
+    # os.system(f"ghdl -e {component}")
+    subprocess.run(["ghdl", "-e", component])
